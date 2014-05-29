@@ -1,23 +1,62 @@
 package com.abc;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Bank {
-    private List<Customer> customers;
+	//Provide a unique ID for every customer like an account ID of 9 digits
+	//private static final int ID_CONSTANT = 100000000;
+    private Map<Integer, Customer> customers;
 
     public Bank() {
-        customers = new ArrayList<Customer>();
+        customers = new LinkedHashMap<Integer, Customer>();
     }
 
     public void addCustomer(Customer customer) {
-        customers.add(customer);
+        customers.put(customer.hashCode(), customer);
     }
+    
+    public void removeCustomer(Customer customer){
+    	int total = 0;
+    	List<Account> accounts = customer.getAccounts();
+    	{
+    		for(Account a : accounts)
+    		{
+    			total += a.sumTransactions();
+    			System.out.println(total);
+    		}
+    	}
+    	if (total == 0)
+    		customers.remove(customers.get(customer.hashCode()));
+    }
+    
+    public int getNumberOfCustomers(){
+    	return customers.size();
+    }
+    
+    public Customer getCustomer(String str)
+    {
+    	for(Integer key : customers.keySet())
+    		if(customers.get(key).getName().equals(str))
+    			return customers.get(key);
+    	return null;
+    }
+    
+    public Customer getCustomerByAccountID(Integer id)
+    {
+    	return customers.get(id);
+    }
+    
+    
+    
 
     public String customerSummary() {
         String summary = "Customer Summary";
-        for (Customer c : customers)
-            summary += "\n - " + c.getName() + " (" + format(c.getNumberOfAccounts(), "account") + ")";
+        for(Integer key : customers.keySet())
+            summary += "\n - " + customers.get(key).getName() + " (" + format(customers.get(key).getNumberOfAccounts(), "account") + ")";
         return summary;
     }
 
@@ -29,18 +68,15 @@ public class Bank {
 
     public double totalInterestPaid() {
         double total = 0;
-        for(Customer c: customers)
-            total += c.totalInterestEarned();
+        for(Integer key : customers.keySet())
+            total += customers.get(key).totalInterestEarned();
         return total;
     }
 
     public String getFirstCustomer() {
-        try {
-            customers = null;
+        if(getNumberOfCustomers()>0)
             return customers.get(0).getName();
-        } catch (Exception e){
-            e.printStackTrace();
+        else
             return "Error";
-        }
     }
 }

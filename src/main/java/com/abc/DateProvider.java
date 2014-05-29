@@ -15,4 +15,12 @@ public class DateProvider {
     public Date now() {
         return Calendar.getInstance().getTime();
     }
+    
+   public Date subtract15Days() {
+	   Calendar cal = Calendar.getInstance();
+	   cal.setTime(now());
+	   cal.add(Calendar.DATE, -15);
+	   Date dateBefore15Days = cal.getTime();
+	   return dateBefore15Days;
+   }
 }
